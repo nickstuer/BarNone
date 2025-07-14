@@ -1,6 +1,6 @@
 # BarNone
 
-![PyPI](https://img.shields.io/pypi/v/barnone?label=barnone)
+[![PyPI](https://img.shields.io/pypi/v/barnone?label=barnone)](https://pypi.org/project/barnone/)
 ![Python Versions](https://img.shields.io/badge/python-3.9+-blue?logo=python)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/barnone)](https://pypistats.org/packages/barnone)
 [![GitHub issues](https://img.shields.io/github/issues/nickstuer/barnone.svg)](https://github.com/nickstuer/barnone/issues)

@@ -1,3 +1,4 @@
+import io
 import re
 import time
 
@@ -147,3 +148,72 @@ def test_finish_early_shows_complete(capsys):
     assert "100%" in last_line
     assert "5/5" in last_line
     assert "ETA 0.0s" in last_line
+
+
+def test_write_basic_message_sets_last_line_len_and_writes(monkeypatch):
+    pb = ProgressBar(total=1)
+    stream = io.StringIO()
+    pb._stream = stream
+    pb._last_line_len = 0
+
+    pb._write("Hello World", pad_line=True, flush=True)
+    assert stream.getvalue() == "Hello World"
+    assert pb._last_line_len == len("Hello World")
+
+
+def test_write_message_pads_to_last_line_len(monkeypatch):
+    pb = ProgressBar(total=1)
+    stream = io.StringIO()
+    pb._stream = stream
+    pb._last_line_len = 15
+
+    pb._write("Short", pad_line=False, flush=True)
+    # Should pad to 15 chars
+    assert stream.getvalue() == "Short" + " " * (15 - len("Short"))
+    # Should not update _last_line_len
+    assert pb._last_line_len == 15
+
+
+def test_write_message_updates_last_line_len_when_pad_line_true(monkeypatch):
+    pb = ProgressBar(total=1)
+    stream = io.StringIO()
+    pb._stream = stream
+    pb._last_line_len = 5
+
+    pb._write("Longer message", pad_line=True, flush=True)
+    assert pb._last_line_len == len("Longer message")
+
+
+def test_write_flush_false(monkeypatch):
+    pb = ProgressBar(total=1)
+    stream = io.StringIO()
+    pb._stream = stream
+    pb._last_line_len = 0
+
+    # Monkeypatch flush to track calls
+    called = {}
+
+    def fake_flush():
+        called["flushed"] = True
+
+    pb._stream.flush = fake_flush
+
+    pb._write("Test", pad_line=True, flush=False)
+    assert called.get("flushed") is None  # flush should not be called
+
+
+def test_write_flush_true(monkeypatch):
+    pb = ProgressBar(total=1)
+    stream = io.StringIO()
+    pb._stream = stream
+    pb._last_line_len = 0
+
+    called = {}
+
+    def fake_flush():
+        called["flushed"] = True
+
+    pb._stream.flush = fake_flush
+
+    pb._write("Test", pad_line=True, flush=True)
+    assert called.get("flushed") is True

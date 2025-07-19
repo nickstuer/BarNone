@@ -118,7 +118,6 @@ class ProgressBar:
 
     def _render_overrun(self) -> None:
         line = f"\rWarning: Progress bar overrun. Current Step: {self.current_step} of {self.total}."
-        line = line.ljust(self._last_line_len)
         self._write(line)
 
     def _generate_bar(self) -> str:

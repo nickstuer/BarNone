@@ -4,7 +4,7 @@ requires-python = ">=3.9"
 
 [[package]]
 name = "barnone"
-version = "1.0.0"
+version = "1.0.2"
 source = { editable = "." }
 
 [package.dev-dependencies]

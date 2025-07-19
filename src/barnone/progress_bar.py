@@ -58,16 +58,22 @@ class ProgressBar:
             self.start()
 
     def start(self) -> None:
+        """Start the progress bar."""
         if self._start_time is not None:
             msg = "Progress bar has already been started."
             raise RuntimeError(msg)
 
         self._start_time = time.time()
-        self._stream.write("\033[?25l")  # Hide terminal cursor
-        self._stream.flush()
+        self._write("\033[?25l", pad_line=False)  # Hide terminal cursor
         self._render()
 
     def update(self, stepsize: int = 1) -> None:
+        """Update the progress bar by a given number of steps.
+
+        Args:
+            stepsize (int): The number of steps to increment the progress bar. Default is 1.
+
+        """
         if self._start_time is None:
             msg = "Progress bar has not been started yet."
             raise RuntimeError(msg)
@@ -93,13 +99,13 @@ class ProgressBar:
         self.remaining_seconds = float(self.elapsed_seconds / self.current_step * self.remaining_steps)
 
     def finish(self) -> None:
+        """Finish the progress bar and render the final state."""
         self.current_step = self.total
         self._update_progress()
         self._render()
         self._finish_time = time.time()
         self._last_line_len = 0
-        self._stream.write("\n")
-        self._stream.flush()
+        self._write("\n")
 
     def _render(self) -> None:
         bar = self._generate_bar()
@@ -108,17 +114,12 @@ class ProgressBar:
         eta = self._generate_eta()
 
         line = f"\r{self.prefix}[{bar}] {percentage}{steps_status}{eta}{self.suffix}"
-        line = line.ljust(self._last_line_len)
-        self._last_line_len = len(line)
-        self._stream.write(line)
-        self._stream.flush()
+        self._write(line)
 
     def _render_overrun(self) -> None:
         line = f"\rWarning: Progress bar overrun. Current Step: {self.current_step} of {self.total}."
         line = line.ljust(self._last_line_len)
-        self._last_line_len = len(line)
-        self._stream.write(line)
-        self._stream.flush()
+        self._write(line)
 
     def _generate_bar(self) -> str:
         filled_length = int(self.width * self.progress)
@@ -135,3 +136,19 @@ class ProgressBar:
         if self.current_step > 0:
             return f" ETA {format_time(self.remaining_seconds)}"
         return " ETA N/A"
+
+    def _write(self, message: str, *, pad_line: bool = True, flush: bool = True) -> None:
+        """Write a message to the stream.
+
+        Args:
+            message (str): The message to write.
+            pad_line (bool): If True, the message will be padded to the last line length.
+            flush (bool): If True, flush the stream after writing.
+
+        """
+        message = message.ljust(self._last_line_len)
+        if pad_line:
+            self._last_line_len = len(message)
+        self._stream.write(message)
+        if flush:
+            self._stream.flush()

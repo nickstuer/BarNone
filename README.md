@@ -57,7 +57,7 @@ for _ in range(5):
 ```
 
 Terminal Output:
-![ColoredProgressBar Example](screenshots/ColoredProgressBar.png "ColoredProgressBar Example")
+![ColoredProgressBar Example](https://raw.githubusercontent.com/nickstuer/BarNone/refs/heads/main/screenshots/ColoredProgressBar.png "ColoredProgressBar Example")
 
 
 ## Contributing
